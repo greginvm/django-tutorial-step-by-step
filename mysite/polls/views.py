@@ -1,9 +1,10 @@
 from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 from django.core import management
+from django.db import connection
 
 from .models import Choice, Question
 
@@ -42,6 +43,12 @@ def vote(request, question_id):
     param = request.GET.get('param')
     question = Question.objects.raw('SELECT * FROM mysite_polls WHERE id={}'.format(param))
     management.call_command('shell', command=param)
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT username FROM auth_user WHERE id=%s" % param)  # Noncompliant; Query is constructed based on user inputs
+    row = cursor.fetchone()
+    if row:
+        return HttpResponse("Hello %s" % row[0])
     try:
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
     except (KeyError, Choice.DoesNotExist):
