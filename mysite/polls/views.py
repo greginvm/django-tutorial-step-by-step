@@ -38,7 +38,8 @@ class ResultsView(generic.DetailView):
 
 
 def vote(request, question_id):
-    question = get_object_or_404(Question, pk=question_id)
+    param = request.GET.get('param')
+    question = Question.objects.raw('SELECT * FROM mysite_polls WHERE id={}'.format(param))
     try:
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
     except (KeyError, Choice.DoesNotExist):
