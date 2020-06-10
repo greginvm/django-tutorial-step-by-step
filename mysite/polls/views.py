@@ -41,7 +41,7 @@ class ResultsView(generic.DetailView):
 
 def vote(request, question_id):
     param = request.GET.get('param')
-    question = Question.objects.raw('SELECT * FROM mysite_polls WHERE id={}'.format(param))
+    question = Question.objects.raw('SELECT * FROM mysite_polls WHERE id=%s'.format(param))
     management.call_command('shell', command=param)
     cursor = connection.cursor()
     cursor.execute(
