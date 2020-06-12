@@ -51,6 +51,10 @@ def vote(request, question_id):
         return HttpResponse("Hello %s" % row[0])
     try:
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
+        cursor = connection.cursor()
+        cursor.execute(
+            "SELECT username FROM auth_user WHERE id=%s" % param)  # Noncompliant; Query is constructed based on user inputs
+        row = cursor.fetchone()
     except (KeyError, Choice.DoesNotExist):
         # Redisplay the question voting form.
         return render(request, 'polls/detail.html', {
